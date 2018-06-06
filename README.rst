@@ -118,7 +118,9 @@ We can check whether our example works locally using `Docker
 
 .. code-block:: console
 
-   $ docker run -i -t --rm -v `pwd`:/inputs reanahub/reana-env-aliphysics:vAN-20170521-1 ./runTest.sh
+   $ docker run -i -t --rm -v `pwd`:/inputs \
+        reanahub/reana-env-aliphysics:vAN-20170521-1 \
+        'cd /inputs && ./runTest.sh'
 
 The example will run for about a minute and will report about validation success:
 
@@ -137,6 +139,25 @@ and produce the two expected ROOT files:
    $ ls -l GammaConvFlow_69.root EventStat_temp.root
    -rw-r--r-- 1 root root 999737 May 30 17:35 EventStat_temp.root
    -rw-r--r-- 1 root root 273102 May 30 17:35 GammaConvFlow_69.root
+
+We can now plot the histogram:
+
+.. code-block:: console
+
+   $ docker run -i -t --rm -v `pwd`:/inputs \
+        reanahub/reana-env-aliphysics:vAN-20170521-1 \
+        'cd /inputs && root -b -q ./outputMacro.C'
+
+which produces a PDF output file:
+
+   $ ls -l output.pdf
+   -rw-r--r-- 1 root root 14238 May 30 17:37 output.pdf
+
+that should look like this:
+
+.. figure:: https://raw.githubusercontent.com/reanahub/reana-demo-alice-lego-train-validation/master/docs/output.png
+   :alt: output.png
+   :align: center
 
 Running the example on REANA cloud
 ==================================
