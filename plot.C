@@ -1,4 +1,4 @@
-void outputMacro()
+void plot()
 {
 
   TFile *file = TFile::Open("GammaConvFlow_69.root");
@@ -10,5 +10,5 @@ void outputMacro()
   if(plot)
     plot->DrawCopy();
 
-  c1.SaveAs("output.pdf");
+  c1->SaveAs("plot.pdf");
 }
