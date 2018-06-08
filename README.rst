@@ -2,14 +2,14 @@
  REANA example - ALICE LEGO train test run
 ===========================================
 
-.. image:: https://img.shields.io/travis/reanahub/reana-demo-alice-lego-train-validation.svg
-   :target: https://travis-ci.org/reanahub/reana-demo-alice-lego-train-validation
+.. image:: https://img.shields.io/travis/reanahub/reana-demo-alice-lego-train-test-run.svg
+   :target: https://travis-ci.org/reanahub/reana-demo-alice-lego-train-test-run
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
    :target: https://gitter.im/reanahub/reana?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
 
-.. image:: https://img.shields.io/github/license/reanahub/reana-demo-alice-lego-train-validation.svg
-   :target: https://raw.githubusercontent.com/reanahub/reana-demo-alice-lego-train-validation/master/LICENSE
+.. image:: https://img.shields.io/github/license/reanahub/reana-demo-alice-lego-train-test-run.svg
+   :target: https://raw.githubusercontent.com/reanahub/reana-demo-alice-lego-train-test-run/master/LICENSE
 
 About
 =====
@@ -181,7 +181,7 @@ which produces a PDF plot:
    $ ls -l plot.pdf
    -rw-r--r-- 1 root root 14238 May 30 17:37 plot.pdf
 
-.. figure:: https://raw.githubusercontent.com/reanahub/reana-demo-alice-lego-train-validation/master/docs/plot.png
+.. figure:: https://raw.githubusercontent.com/reanahub/reana-demo-alice-lego-train-test-run/master/docs/plot.png
    :alt: plot.png
    :align: center
 
