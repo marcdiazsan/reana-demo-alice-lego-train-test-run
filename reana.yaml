@@ -1,0 +1,34 @@
+version: 0.3.0
+inputs:
+  files:
+   - MLTrainDefinition.cfg
+   - data.txt
+   - env.sh
+   - generate.C
+   - globalvariables.C
+   - handlers.C
+   - plot.C
+   - runTest.sh
+   - fix-env.sh
+  parameters:
+    none: none
+outputs:
+  files:
+   - plot.pdf
+environments:
+ - type: docker
+   image: reanahub/reana-env-aliphysics:vAN-20170521-1
+workflow:
+  type: serial
+  specification:
+    steps:
+      - environment: 'reanahub/reana-env-aliphysics:vAN-20170521-1'
+        commands:
+        - 'cp ../inputs/* .'
+        - 'mkdir __alice__data__2011__LHC11h_2__000170387/'
+        - 'wget http://opendata.cern.ch/record/1100/files/assets/alice/2010/LHC10b/000117222/ESD/0001/AliESDs.root'
+        - 'mv AliESDs.root __alice__data__2011__LHC11h_2__000170387/'
+        - 'source fix-env.sh && source env.sh && aliroot -b -q generate.C > generation.log 2> generation.err'
+        - 'source fix-env.sh && source env.sh && export ALIEN_PROC_ID=12345678 && source ./lego_train.sh > stdout 2> stderr'
+        - 'source fix-env.sh && source env.sh && source ./lego_train_validation.sh > validation.log 2> validation.err'
+        - 'source fix-env.sh && source env.sh && root -b -q ./plot.C'

@@ -1,1 +1,1 @@
-/inputs/__alice__data__2011__LHC11h_2__000170387/AliESDs.root
+./__alice__data__2011__LHC11h_2__000170387/AliESDs.root

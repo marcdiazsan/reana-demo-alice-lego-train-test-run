@@ -28,8 +28,8 @@ addressing (1) where the input datasets are, (2) what software was used to
 analyse the data, (3) which computing environment was used to run the software,
 and (4) which workflow steps were taken to run the analysis.
 
-1. Input dataset
----------------
+1. Input data
+-------------
 
 This example uses ALICE proton-proton data sample input files. You will need to
 take some Pb-Pb ESD file from `CERN Open Data portal
@@ -40,10 +40,10 @@ from RunB in 2010: (beware, the file is 231 MB large)
 
    $ mkdir -p __alice__data__2011__LHC11h_2__000170387
    $ cd __alice__data__2011__LHC11h_2__000170387
-   $ wget http://opendata.cern.ch/record/1100/files/assets/alice/2010/LHC10b/000117222/ESD/0001/AliESDs.root .
+   $ wget http://opendata.cern.ch/record/1100/files/assets/alice/2010/LHC10b/000117222/ESD/0001/AliESDs.root
    $ cd ..
 
-Please make sure that ``data.txt`` contains well the absolute path to the sample
+Note that ``data.txt`` file should contain the path to the downloaded sample
 data file.
 
 2. Analysis code
@@ -131,24 +131,71 @@ and validation. Underneath, the following sequence of commands is called:
 The produced log files indicate whether the train test run was successful and
 whether the output is validated.
 
-The test run will create `ROOT <https://root.cern.ch/>`_ output files that
-usually contain histograms. The user typically uses the output files to produce
-final plots.
+The computational workflow is therefore essentialy sequential in nature. We can
+use the REANA serial workflow engine and represent the analysis workflow as
+follows:
 
-Local testing with Docker
-=========================
+.. code-block:: text
 
-Let us check whether the example works locally using vanilla `Docker
-<https://www.docker.com/>`_ based execution directly:
+              START
+               |
+               |
+               V
+   +----------------------------------------+
+   | (1) download ESD input data file       |
+   |                                        |
+   |    $ wget http://opendata.cern.ch/...  |
+   +----------------------------------------+
+               |
+               | ALIESD.root
+               V
+   +----------------------------------------+       +-------------------------+
+   | (2) generate LEGO train files          |       |       input code        |
+   |                                        |  <----|   MLTrainDefinition.cfg |
+   |    $ aliroot -b -q generate.C          |       |   env.sh handlers.C ... |
+   +----------------------------------------+       +-------------------------+
+               |
+               | lego_train.sh
+               | lego_train_validation.sh
+               | ...
+               V
+   +----------------------------------------+
+   | (3) perform LEGO train test run        |
+   |                                        |
+   |    $ source ./lego_train.sh            |
+   +----------------------------------------+
+               |
+               |  stdout
+               | GammaConvFlow_69.root
+               | ...
+               V
+   +----------------------------------------+
+   | (4) validate test run outputs          |
+   |                                        |
+   |    $ source ./lego_train_validation.sh |
+   +----------------------------------------+
+               |
+               | validation.log
+               | GammaConvFlow_69.root
+               V
+   +----------------------------------------+
+   | (5) plot sample histogram              |
+   |                                        |
+   |    $ root -b -q plot.C                 |
+   +----------------------------------------+
+               |
+               | plot.pdf
+               V
+              STOP
 
-.. code-block:: console
+We shall see below how this sequence of commands is represented for the REANA
+serial workflow engine.
 
-   $ docker run -i -t --rm -v `pwd`:/inputs \
-        reanahub/reana-env-aliphysics:vAN-20170521-1 \
-        'cd /inputs && ./runTest.sh'
+5. Output results
+-----------------
 
-The example will run for about a minute and will report the test run validation
-success or failure:
+The output of the ALICE LEGO analysis train test run and validation is available
+in the ``stdout`` file. The success or failure is reported at the end:
 
 .. code-block:: console
 
@@ -158,7 +205,8 @@ success or failure:
    * ----------------------------------------------------*
    *******************************************************
 
-The example produces two output files:
+The test run will also create `ROOT <https://root.cern.ch/>`_ output files that
+usually contain histograms.
 
 .. code-block:: console
 
@@ -166,29 +214,138 @@ The example produces two output files:
    -rw-r--r-- 1 root root 999737 May 30 17:35 EventStat_temp.root
    -rw-r--r-- 1 root root 273102 May 30 17:35 GammaConvFlow_69.root
 
-We can visualise a sample event plane histogram:
-
-.. code-block:: console
-
-   $ docker run -i -t --rm -v `pwd`:/inputs \
-        reanahub/reana-env-aliphysics:vAN-20170521-1 \
-        'cd /inputs && root -b -q ./plot.C'
-
-which produces a PDF plot:
-
-.. code-block:: console
-
-   $ ls -l plot.pdf
-   -rw-r--r-- 1 root root 14238 May 30 17:37 plot.pdf
+The user typically uses the output files to produce final plots. For example,
+running ``plot.C`` output macro on the ``GammaConvFlow_69.root`` output file
+will permit to visualise a sample event plane histogram:
 
 .. figure:: https://raw.githubusercontent.com/reanahub/reana-demo-alice-lego-train-test-run/master/docs/plot.png
    :alt: plot.png
    :align: center
 
+Local testing
+=============
+
+*Optional*
+
+If you would like to test the analysis locally (i.e. outside of the REANA
+platform), you can proceed as follows:
+
+.. code-block:: console
+
+   $ docker run -i -t --rm -v `pwd`:/inputs \
+        reanahub/reana-env-aliphysics:vAN-20170521-1 \
+        'cd /inputs && source ./runTest.sh'
+   $ tail -4 stdout
+   $ ls -l GammaConvFlow_69.root EventStat_temp.root
+   $ docker run -i -t --rm -v `pwd`:/inputs \
+        reanahub/reana-env-aliphysics:vAN-20170521-1 \
+        'cd /inputs && root -b -q ./plot.C'
+   $ ls -l plot.pdf
+
 Running the example on REANA cloud
 ==================================
 
-**FIXME**
+First we need to create a `reana.yaml <reana.yaml>`_ file describing the
+structure of our analysis with its inputs, the code, the runtime environment,
+the workflow and the expected outputs:
+
+.. code-block:: yaml
+
+   version: 0.3.0
+   inputs:
+     files:
+      - MLTrainDefinition.cfg
+      - data.txt
+      - env.sh
+      - generate.C
+      - globalvariables.C
+      - handlers.C
+      - plot.C
+      - runTest.sh
+      - fix-env.sh
+     parameters:
+       none: none
+   outputs:
+     files:
+      - plot.pdf
+   environments:
+    - type: docker
+      image: reanahub/reana-env-aliphysics:vAN-20170521-1
+   workflow:
+     type: serial
+     specification:
+       steps:
+         - environment: 'reanahub/reana-env-aliphysics:vAN-20170521-1'
+           commands:
+           - 'cp ../inputs/* .'
+           - 'mkdir __alice__data__2011__LHC11h_2__000170387/'
+           - 'wget http://opendata.cern.ch/record/1100/files/assets/alice/2010/LHC10b/000117222/ESD/0001/AliESDs.root'
+           - 'mv AliESDs.root __alice__data__2011__LHC11h_2__000170387/'
+           - 'source fix-env.sh && source env.sh && aliroot -b -q generate.C > generation.log 2> generation.err'
+           - 'source fix-env.sh && source env.sh && export ALIEN_PROC_ID=12345678 && source ./lego_train.sh > stdout 2> stderr'
+           - 'source fix-env.sh && source env.sh && source ./lego_train_validation.sh > validation.log 2> validation.err'
+           - 'source fix-env.sh && source env.sh && root -b -q ./plot.C'
+
+We proceed by installing the REANA command-line client:
+
+.. code-block:: console
+
+    $ mkvirtualenv reana-client
+    $ pip install reana-client
+
+We should now connect the client to the remote REANA cloud where the analysis
+will run. We do this by setting the ``REANA_SERVER_URL`` environment variable:
+
+.. code-block:: console
+
+    $ export REANA_SERVER_URL=https://reana.cern.ch/
+
+Note that if you `run REANA cluster locally
+<http://reana-cluster.readthedocs.io/en/latest/gettingstarted.html#deploy-reana-cluster-locally>`_
+on your laptop, you would do:
+
+.. code-block:: console
+
+   $ eval $(reana-cluster env)
+
+Let us test the client-to-server connection:
+
+.. code-block:: console
+
+   $ reana-client ping
+   Server is running.
+
+We can now seed the analysis workspace with input files:
+
+.. code-block:: console
+
+   $ reana-client inputs upload MLTrainDefinition.cfg data.txt \
+        env.sh generate.C globalvariables.C handlers.C plot.C \
+        runTest.sh fix-env.sh
+
+We can now start the workflow execution:
+
+.. code-block:: console
+
+    $ reana-client workflow start
+    workflow.1 has been started.
+
+After several minutes the workflow should be successfully finished. Let us query
+its status:
+
+.. code-block:: console
+
+    $ reana-client workflow status
+    NAME       RUN_NUMBER   ID                                     USER                                   ORGANIZATION   STATUS
+    workflow   1            0df60c85-9d84-402e-814c-0595fe5fd439   00000000-0000-0000-0000-000000000000   default        finished
+
+We can list and download the output files:
+
+.. code-block:: console
+
+   $ reana-client outputs list
+   $ reana-client outputs download stdout
+   $ reana-client outputs download plot.pdf
 
 Contributors
 ============
