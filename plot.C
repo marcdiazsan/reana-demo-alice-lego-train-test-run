@@ -1,4 +1,4 @@
-output(){
+void plot() {
   TFile *file = TFile::Open("AnalysisResults.root");
   TList *list = (TList*) gFile->Get("NetNpiMCBASE");
 
@@ -9,5 +9,7 @@ output(){
     plot->GetXaxis()->SetTitle("centrality");
     plot->GetYaxis()->SetTitle("events");
     plot->DrawCopy();
+
+    c1->SaveAs("plot.pdf");
   }
 }

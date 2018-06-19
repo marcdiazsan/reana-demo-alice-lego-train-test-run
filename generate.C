@@ -2,7 +2,7 @@
 // Authors: Andrea Gheata, Jan Fiete Grosse-Oetringhaus, Costin Grigoras, Markus Zimmermann
 //
 //
-// requires env variables 
+// requires env variables
 
 void generate(const char *module = "__ALL__")
 {
@@ -24,19 +24,19 @@ void generate(const char *module = "__ALL__")
   TString periodName(gSystem->Getenv("PERIOD_NAME"));//PERIOD_NAME
 
    const char *train_name="lego_train";
-   
+
    if (strcmp(module, "__ALL__") == 0)
      module = "";
-   
+
    gSystem->Load("libANALYSIS");
    gSystem->Load("libANALYSISalice");
 
    TObjArray *arr = AliAnalysisTaskCfg::ExtractModulesFrom("MLTrainDefinition.cfg");
-   
+
    Printf(">>>>>>> Read train configuration");
    arr->Print();
-   
-   
+
+
    AliAnalysisAlien *plugin = new AliAnalysisAlien(train_name);
    // General plugin settings here
    plugin->SetProductionMode();
@@ -52,39 +52,39 @@ void generate(const char *module = "__ALL__")
    plugin->SetTTL(ttl);
    plugin->SetAnalysisMacro(Form("%s.C", train_name));
    plugin->SetValidationScript("validation.sh");
-   
+
    plugin->SetRegisterExcludes(excludeFiles + " AliAOD.root");
 
    // jemalloc
-   additionalpackages += " jemalloc::v3.0.0"; 
+   additionalpackages += " jemalloc::v3.0.0";
    plugin->AddExternalPackage(additionalpackages);
-   
-//    plugin->SetExecutableCommand("root -b -q"); 
+
+//    plugin->SetExecutableCommand("root -b -q");
    plugin->SetJDLName(Form("%s.jdl", train_name));
    plugin->SetExecutable(Form("%s.sh", train_name));
    plugin->SetSplitMode("se");
-   
+
    plugin->SetGridOutputDir("./");
    plugin->SetGridWorkingDir("./");
 
    plugin->SetKeepLogs(kTRUE);
-   
+
    plugin->SetMergeViaJDL();
-   
+
    if (dataFolder.Length() == 0)
    {
       Printf("ERROR: TRAIN_TESTDATA not set. Exiting...");
       return;
    }
-  
+
    if (dataBasePath.Length() > 0)
    {
      TString archiveName = "root_archive.zip";
      if (AOD == 2)
        archiveName = "aod_archive.zip";
-    
+
      TString dataFileName("data.txt");
-    
+
      plugin->SetFileForTestMode(Form("%s/%s", dataFolder.Data(), dataFileName.Data()));
      plugin->SetNtestFiles(nFiles);
 
@@ -95,7 +95,7 @@ void generate(const char *module = "__ALL__")
 	 plugin->SetUseMCchain();
        }
    }
-   
+
    // Load modules here
    plugin->AddModules(arr);
    plugin->CreateAnalysisManager("train","handlers.C");
@@ -107,7 +107,7 @@ void generate(const char *module = "__ALL__")
      Long64_t neededJobs = totalEvents / splitMaxInputFileNumber;
 
      plugin->SetMCLoop(true);
-     plugin->SetSplitMode(Form("production:1-%d", neededJobs)); 
+     plugin->SetSplitMode(Form("production:1-%d", neededJobs));
      plugin->SetNMCjobs(neededJobs);
      plugin->SetNMCevents(nTestEvents);
      plugin->SetExecutableCommand("aliroot -b -q");
@@ -117,16 +117,16 @@ void generate(const char *module = "__ALL__")
    } else { // Data, ESD/AOD
      plugin->SetSplitMaxInputFileNumber(splitMaxInputFileNumber);
 
-     plugin->SetExecutableCommand("root -b -q"); 
+     plugin->SetExecutableCommand("root -b -q");
      plugin->SetInputFormat("xml-single");
    }
 
    AliAnalysisManager* mgr = AliAnalysisManager::GetAnalysisManager();
    mgr->SetDebugLevel(debugLevel);
    mgr->SetNSysInfo((isPP == 1) ? 1000 : 40);
-   
+
    mgr->SetFileInfoLog("fileinfo.log");
-   
+
    // execute custom configuration
    Int_t error = 0;
    gROOT->Macro("globalvariables.C", &error);
@@ -135,14 +135,14 @@ void generate(const char *module = "__ALL__")
       Printf("ERROR: globalvariables.C was not executed successfully...");
       return;
    }
-   
+
    plugin->GenerateTest(train_name, module);
-   
+
    // check for illegally defined output files
    validOutputFiles += "," + excludeFiles;
    TString outputFiles = plugin->GetListOfFiles("out");
    tokens = outputFiles.Tokenize(",");
-   
+
    Bool_t valid = kTRUE;
    for (Int_t i=0; i<tokens->GetEntries(); i++)
    {
@@ -153,7 +153,7 @@ void generate(const char *module = "__ALL__")
      }
    }
    delete tokens;
-   
+
    if (!valid)
    {
      Printf(">>>>>>>>> Invalid output files requested. <<<<<<<<<<<<");

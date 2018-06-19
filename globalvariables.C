@@ -36,7 +36,7 @@ Double_t maxCent = 100;
 UInt_t kComPhysSel = AliVEvent::kAny;
 
 //UInt_t kComPhysSel = AliVEvent::kAnyINT | AliVEvent::kEMCEGA | AliVEvent::kCentral | AliVEvent::kSemiCentral;
-//UInt_t kComPhysSel = AliVEvent::kINT7 + AliVEvent::kEMCEGA + AliVEvent::kEMCEJE + AliVEvent::kEMC7; 
+//UInt_t kComPhysSel = AliVEvent::kINT7 + AliVEvent::kEMCEGA + AliVEvent::kEMCEJE + AliVEvent::kEMC7;
 
 UInt_t kPhysSel = 1<<31; //AliEmcalPhysicsSelection::kEmcalOk
 //UInt_t kPhysSel = AliVEvent::kAnyINT + AliVEvent::kSemiCentral + AliVEvent::kCentral;
@@ -44,20 +44,20 @@ UInt_t kPhysSel = 1<<31; //AliEmcalPhysicsSelection::kEmcalOk
 //UInt_t kPhysSel = AliVEvent::kMB;
 //UInt_t kPhysSel = AliVEvent::kEMCEGA;
 //UInt_t kPhysSelCentral = AliVEvent::kCentral;
-//UInt_t kComPhysSel = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral + AliVEvent::kEMCEGA + AliVEvent::kEMCEJE; 
+//UInt_t kComPhysSel = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral + AliVEvent::kEMCEGA + AliVEvent::kEMCEJE;
 //UInt_t kComPhysSel = AliVEvent::kAny;
 //UInt_t kComPhysSel = AliVEvent::kEMCEGA;
 //UInt_t kComPhysSel = AliVEvent::kEMCEJE;
-//UInt_t kComPhysSel = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral; 
-//UInt_t kComPhysSel = AliVEvent::kMB + AliVEvent::kCentral; 
+//UInt_t kComPhysSel = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral;
+//UInt_t kComPhysSel = AliVEvent::kMB + AliVEvent::kCentral;
 //UInt_t kComPhysSel = AliVEvent::kEMCEJE;
 //UInt_t kComPhysSel = AliVEvent::kMB;
 
 // Some trigger definitions for Joel
 UInt_t kPhysSelJetHadEMCEJE = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral + AliVEvent::kEMCEJE;
 UInt_t kPhysSelJetHadEMCEJGA = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral + AliVEvent::kEMCEJE + AliVEvent::kEMCEGA;
-UInt_t kPhysSelJetHadEMCEGA = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral + AliVEvent::kEMCEGA; 
-UInt_t kPhysSelJetHadMB = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral; 
+UInt_t kPhysSelJetHadEMCEGA = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral + AliVEvent::kEMCEGA;
+UInt_t kPhysSelJetHadMB = AliVEvent::kMB + AliVEvent::kSemiCentral + AliVEvent::kCentral;
 
 
 /*************************************/
@@ -123,7 +123,7 @@ Bool_t kMakeEmcalTriggers = kFALSE;
 const char* kEmcalTriggers = "";
 if(kMakeEmcalTriggers) kEmcalTriggers = "EmcalTriggers";
 
-Double_t kTrackEff = 1.0; 
+Double_t kTrackEff = 1.0;
 
 Double_t kPropDist = 440;
 Double_t kHadCorr = 2.0;
@@ -181,7 +181,7 @@ kNjetResp *= kNcent;
 Bool_t kMakeTrigger = kFALSE;
 
 if (1) {
-  UInt_t kPythiaR020Charged = 0; 
+  UInt_t kPythiaR020Charged = 0;
   UInt_t kPythiaR030Charged = 0;
   UInt_t kPythiaR040Charged = 0;
 
@@ -245,7 +245,7 @@ TString kTpcRhoNameExLJTEST = "TpcRho_ExLJ";
 TString kTpcRhoNameExLJTEST1 = "TpcRho_ExLJ1"; // for 1+ GeV constituent jets
 TString kTpcRhoNameExLJTEST2 = "TpcRho_ExLJ2"; // for 2+ GeV constituent jets
 TString kTpcRhoNameExLJTEST3 = "TpcRho_ExLJ3"; // for 3+ GeV constituent jets
-TString kTpcKtJetsNameTEST(Form("Jet_KTChargedR020_%s_pT0150_pt_scheme",kTracksNameTEST.Data())); 
+TString kTpcKtJetsNameTEST(Form("Jet_KTChargedR020_%s_pT0150_pt_scheme",kTracksNameTEST.Data()));
 TString kTpcJetsR02NameTEST(Form("Jet_AKTChargedR020_%s_pT0150_pt_scheme",kTracksNameTEST.Data()));
 TString kTpcRhoExLJScaledNameTEST = "TpcRho_ExLJ_Scaled";
 
@@ -257,10 +257,10 @@ TString kEmcalJets3GeVR01NameTEST(Form("Jet_AKTFullR010_%s_pT3000_%s_E3000_pt_sc
 
 // NEW name scheme for framework changes - Dec 12, 2015
 TString kTracksNameNEW = "tracks";
-TString kTpcKtJetsNameNEW(Form("Jet_KTChargedR020_%s_pT0150_pt_scheme",kTracksNameNEW.Data())); 
-TString kTpcKtJetsNameNEW1(Form("Jet_KTChargedR020_%s_pT1000_pt_scheme",kTracksNameNEW.Data())); 
-TString kTpcKtJetsNameNEW2(Form("Jet_KTChargedR020_%s_pT2000_pt_scheme",kTracksNameNEW.Data())); 
-TString kTpcKtJetsNameNEW3(Form("Jet_KTChargedR020_%s_pT3000_pt_scheme",kTracksNameNEW.Data())); 
+TString kTpcKtJetsNameNEW(Form("Jet_KTChargedR020_%s_pT0150_pt_scheme",kTracksNameNEW.Data()));
+TString kTpcKtJetsNameNEW1(Form("Jet_KTChargedR020_%s_pT1000_pt_scheme",kTracksNameNEW.Data()));
+TString kTpcKtJetsNameNEW2(Form("Jet_KTChargedR020_%s_pT2000_pt_scheme",kTracksNameNEW.Data()));
+TString kTpcKtJetsNameNEW3(Form("Jet_KTChargedR020_%s_pT3000_pt_scheme",kTracksNameNEW.Data()));
 TString kTpcJetsR02NameNEW(Form("Jet_AKTChargedR020_%s_pT0150_pt_scheme",kTracksNameNEW.Data()));
 
 
@@ -279,8 +279,8 @@ TString kTpcRhoSmallName = "TpcRho_Small";
 TString kEmcalRhoMeth2Name = "TpcRho_Small_Scaled";
 TString kTpcRhoExLJScaledName = "TpcRho_ExLJ_Scaled";
 
-TString kTpcKtJetsName(Form("Jet_KTChargedR020_%s_pT0150_pt_scheme",kTracksName.Data())); 
-TString kTpcKtJetsR04Name(Form("Jet_KTChargedR040_%s_pT0150_pt_scheme",kTracksName.Data())); 
+TString kTpcKtJetsName(Form("Jet_KTChargedR020_%s_pT0150_pt_scheme",kTracksName.Data()));
+TString kTpcKtJetsR04Name(Form("Jet_KTChargedR040_%s_pT0150_pt_scheme",kTracksName.Data()));
 
 TString kTpcJetsR01Name(Form("Jet_AKTChargedR010_%s_pT0150_pt_scheme",kTracksName.Data()));
 TString kTpcJetsR02Name(Form("Jet_AKTChargedR020_%s_pT0150_pt_scheme",kTracksName.Data()));
@@ -336,16 +336,16 @@ TString kTpcEmbSpectrumJets03Name(Form("Jet_AKTChargedR030_%s_pT0150_pt_scheme",
 TString kTpcEmbSpectrumJets04Name(Form("Jet_AKTChargedR040_%s_pT0150_pt_scheme",kTrackEmbSpectrumName.Data()));
 
 //Jets with E recombination scheme (added by Marta)
-TString kTpcKtJetsESchemeName(Form("Jet_KTChargedR020_%s_pT0150_E_scheme",kTracksNameNEW.Data())); 
-TString kTpcJetsR02ESchemeName(Form("Jet_AKTChargedR020_%s_pT0150_E_scheme",kTracksNameNEW.Data())); 
-TString kTpcJetsR04ESchemeName(Form("Jet_AKTChargedR040_%s_pT0150_E_scheme",kTracksNameNEW.Data())); 
-TString kNeutralKtJetsESchemeName(Form("Jet_KTNeutralR020_%s_ET0300_E_scheme",kCorrClusName.Data())); 
+TString kTpcKtJetsESchemeName(Form("Jet_KTChargedR020_%s_pT0150_E_scheme",kTracksNameNEW.Data()));
+TString kTpcJetsR02ESchemeName(Form("Jet_AKTChargedR020_%s_pT0150_E_scheme",kTracksNameNEW.Data()));
+TString kTpcJetsR04ESchemeName(Form("Jet_AKTChargedR040_%s_pT0150_E_scheme",kTracksNameNEW.Data()));
+TString kNeutralKtJetsESchemeName(Form("Jet_KTNeutralR020_%s_ET0300_E_scheme",kCorrClusName.Data()));
 
 //Jets with E recombination scheme (added by Davide&Leticia)
-TString kTpcKtJetsESchemeName1GeV(Form("Jet_KTChargedR020_%s_pT1000_E_scheme",kTracksName.Data())); 
-TString kTpcKtJetsESchemeNameEmb(Form("Jet_KTChargedR020_%s_pT0150_E_scheme","PicoTracksEmb")); 
-TString kTpcAKtJetsESchemeNameEmb(Form("Jet_AKTChargedR040_%s_pT0150_E_scheme","PicoTracksEmb")); 
-TString kTpcAKtJetsMCESchemeNameEmb(Form("JetMCOnly_AKTChargedR040_%s_pT0150_E_scheme","PicoTracksEmb")); 
+TString kTpcKtJetsESchemeName1GeV(Form("Jet_KTChargedR020_%s_pT1000_E_scheme",kTracksName.Data()));
+TString kTpcKtJetsESchemeNameEmb(Form("Jet_KTChargedR020_%s_pT0150_E_scheme","PicoTracksEmb"));
+TString kTpcAKtJetsESchemeNameEmb(Form("Jet_AKTChargedR040_%s_pT0150_E_scheme","PicoTracksEmb"));
+TString kTpcAKtJetsMCESchemeNameEmb(Form("JetMCOnly_AKTChargedR040_%s_pT0150_E_scheme","PicoTracksEmb"));
 Double_t kPtQG=0.15;
 
 //Double_t kHolePos=0;
@@ -557,7 +557,7 @@ if (0) { // GA trigger
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// added 19 Jun 2017 (From AOD Analysis QA Train) 
+// added 19 Jun 2017 (From AOD Analysis QA Train)
 ////////////////////////////////////////////////////////////////////////////Load correct variables from central production information///////
 const char* kPeriod = gSystem->Getenv("ALIEN_JDL_LPMPRODUCTIONTAG");
 const char* kTrackCuts = kPeriod; //same as kPeriod on default. Separate in order to change tender and track config separately.

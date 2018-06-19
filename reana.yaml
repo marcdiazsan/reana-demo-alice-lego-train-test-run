@@ -5,6 +5,7 @@ inputs:
    - data.txt
    - env.sh
    - generate.C
+   - generator_customization.C
    - globalvariables.C
    - handlers.C
    - plot.C
@@ -17,18 +18,18 @@ outputs:
    - plot.pdf
 environments:
  - type: docker
-   image: reanahub/reana-env-aliphysics:vAN-20170521-1
+   image: reanahub/reana-env-aliphysics:vAN-20180614-1
 workflow:
   type: serial
   specification:
     steps:
-      - environment: 'reanahub/reana-env-aliphysics:vAN-20170521-1'
+      - environment: 'reanahub/reana-env-aliphysics:vAN-20180614-1'
         commands:
         - 'cp ../inputs/* .'
-        - 'mkdir __alice__data__2011__LHC11h_2__000170387/'
-        - 'wget http://opendata.cern.ch/record/1100/files/assets/alice/2010/LHC10b/000117222/ESD/0001/AliESDs.root'
-        - 'mv AliESDs.root __alice__data__2011__LHC11h_2__000170387/'
-        - 'source fix-env.sh && source env.sh && aliroot -b -q generate.C > generation.log 2> generation.err'
-        - 'source fix-env.sh && source env.sh && export ALIEN_PROC_ID=12345678 && source ./lego_train.sh > stdout 2> stderr'
-        - 'source fix-env.sh && source env.sh && source ./lego_train_validation.sh > validation.log 2> validation.err'
+        - 'mkdir __alice__data__2010__LHC10h_2__000139038/'
+        - 'wget http://opendata.cern.ch/record/1102/files/assets/alice/2010/LHC10h/000139038/ESD/0003/AliESDs.root'
+        - 'mv AliESDs.root __alice__data__2010__LHC10h_2__000139038/'
+        - 'source fix-env.sh && source env.sh && aliroot -b -q generate.C | tee generation.log 2> generation.err'
+        - 'source fix-env.sh && source env.sh && export ALIEN_PROC_ID=12345678 && source ./lego_train.sh | tee stdout 2> stderr'
+        - 'source fix-env.sh && source env.sh && source ./lego_train_validation.sh | tee validation.log 2> validation.err'
         - 'source fix-env.sh && source env.sh && root -b -q ./plot.C'

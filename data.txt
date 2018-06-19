@@ -1,1 +1,1 @@
-./__alice__data__2011__LHC11h_2__000170387/AliESDs.root
+./__alice__data__2010__LHC10h_2__000139038/AliESDs.root

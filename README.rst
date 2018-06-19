@@ -14,7 +14,7 @@
 About
 =====
 
-This `REANA <http://www.reanahub.io/>`_ reproducible analysis example performs
+This `REANA <http://www.reana.io/>`_ reproducible analysis example performs
 ALICE LEGO train test run and validation. The procedure is used in ALICE
 collaboration particle physics analyses. Please see `arXiv:1502.06381
 <https://arxiv.org/abs/1502.06381>`_ for more detailed description of the ALICE
@@ -31,16 +31,17 @@ and (4) which workflow steps were taken to run the analysis.
 1. Input data
 -------------
 
-This example uses ALICE proton-proton data sample input files. You will need to
-take some Pb-Pb ESD file from `CERN Open Data portal
-<http://opendata.cern.ch/>`_. For example, the following sample taken at 3.5 TeV
-from RunB in 2010: (beware, the file is 231 MB large)
+This example uses ALICE Pb-Pb collision data input files. We can take a sample
+Pb-Pb ESD open data file that the ALICE collaboration released on the `CERN Open
+Data <http://opendata.cern.ch/>`_ portal, for example the following sample taken
+at 3.5 TeV from run number 139038 in RunH 2010: (beware, the file is 360MB
+large)
 
 .. code-block:: console
 
-   $ mkdir -p __alice__data__2011__LHC11h_2__000170387
-   $ cd __alice__data__2011__LHC11h_2__000170387
-   $ wget http://opendata.cern.ch/record/1100/files/assets/alice/2010/LHC10b/000117222/ESD/0001/AliESDs.root
+   $ mkdir -p __alice__data__2010__LHC10h_2__000139038
+   $ cd __alice__data__2010__LHC10h_2__000139038
+   $ wget http://opendata.cern.ch/record/1102/files/assets/alice/2010/LHC10h/000139038/ESD/0003/AliESDs.root
    $ cd ..
 
 Note that ``data.txt`` file should contain the path to the downloaded sample
@@ -54,6 +55,7 @@ analysis framework with the following source code files:
 
 - `env.sh <env.sh>`_ - ALICE LEGO train system configuration
 - `generate.C <generate.C>`_ - a macro to generate macros to run the ALICE LEGO train
+- `generator_customization.C <generator_customization.C>`_ - generator customisations
 - `globalvariables.C <globalvariables.C>`_ - global variables
 - `handlers.C <handlers.C>`_ - data access handlers (ESD/AOD, collision/MC)
 - `runTest.sh <runTest.sh>`_ - run LEGO train test and validation
@@ -67,15 +69,12 @@ this example, the following wagons are defined:
 .. code-block:: console
 
    $ grep Begin MLTrainDefinition.cfg
-   #Module.Begin        PhysicsSelectionESD
-   #Module.Begin        AliVZEROEPSelectionTask
-   #Module.Begin        AliEPSelectionTask
-   #Module.Begin        CentralityTaskESD
-   #Module.Begin        PIDResponseTaskESD
-   #Module.Begin        GammaConv_PurityTemplate_C_0
+   #Module.Begin        Centrality_CF_AP
+   #Module.Begin        PIDresponse_CF_AP
+   #Module.Begin        Run1NetPiBASE_CF_AP
 
-The first wagons are related to centralised data selection tasks, while the main
-user analysis is executed in the last ``GammaConv`` wagon.
+The first wagons are usually related to centralised data selection tasks, while
+the main user analysis is executed in the last ``Run1NetPiBASE_CF_AP`` wagon.
 
 The ``runTest.sh`` script will take care of creating the train test run, running
 it, and validating its outputs.
@@ -90,9 +89,9 @@ some wanted AliPhysics version from Docker Hub:
 
 .. code-block:: console
 
-   $ docker pull reanahub/reana-env-aliphysics:vAN-20170521-1
+   $ docker pull reanahub/reana-env-aliphysics:vAN-20180614-1
 
-We shall use the ``vAN-20170521-1`` version for the present example.
+We shall use the ``vAN-20180614-1`` version for the present example.
 
 Note that if you would like to build a different AliPhysics version on your own,
 you can follow `reana-env-aliphysics
@@ -135,7 +134,7 @@ The computational workflow is therefore essentialy sequential in nature. We can
 use the REANA serial workflow engine and represent the analysis workflow as
 follows:
 
-.. code-block:: text
+.. code-block:: console
 
               START
                |
@@ -165,8 +164,8 @@ follows:
    |    $ source ./lego_train.sh            |
    +----------------------------------------+
                |
-               |  stdout
-               | GammaConvFlow_69.root
+               | stdout
+               | AnalysisResults.root
                | ...
                V
    +----------------------------------------+
@@ -176,7 +175,7 @@ follows:
    +----------------------------------------+
                |
                | validation.log
-               | GammaConvFlow_69.root
+               | AnalysisResults.root
                V
    +----------------------------------------+
    | (5) plot sample histogram              |
@@ -210,17 +209,22 @@ usually contain histograms.
 
 .. code-block:: console
 
-   $ ls -l GammaConvFlow_69.root EventStat_temp.root
-   -rw-r--r-- 1 root root 999737 May 30 17:35 EventStat_temp.root
-   -rw-r--r-- 1 root root 273102 May 30 17:35 GammaConvFlow_69.root
+   $ ls -l AnalysisResults.root EventStat_temp.root
+   -rw-r--r-- 1 root root 393111 May 30 17:35 EventStat_temp.root
+   -rw-r--r-- 1 root root  31187 May 30 17:35 AnalysisResults.root
 
 The user typically uses the output files to produce final plots. For example,
-running ``plot.C`` output macro on the ``GammaConvFlow_69.root`` output file
-will permit to visualise a sample event plane histogram:
+running ``plot.C`` output macro on the ``AnalysisResults.root`` output file will
+permit to visualise the centrality of accepted events:
 
 .. figure:: https://raw.githubusercontent.com/reanahub/reana-demo-alice-lego-train-test-run/master/docs/plot.png
    :alt: plot.png
    :align: center
+
+Low centralities mean that the the Pb particles hit each other a lot and many
+nucleons collide. High centralities mean that the Pb particles barely interacted
+and only very few nucelons did collide. The centrality of events may be used for
+particle identification.
 
 Local testing
 =============
@@ -232,13 +236,14 @@ platform), you can proceed as follows:
 
 .. code-block:: console
 
+   $ ls -l __alice__data__2010__LHC10h_2__000139038/AliESDs.root
    $ docker run -i -t --rm -v `pwd`:/inputs \
-        reanahub/reana-env-aliphysics:vAN-20170521-1 \
+        reanahub/reana-env-aliphysics:vAN-20180614-1 \
         'cd /inputs && source ./runTest.sh'
    $ tail -4 stdout
-   $ ls -l GammaConvFlow_69.root EventStat_temp.root
+   $ ls -l AnalysisResults.root EventStat_temp.root
    $ docker run -i -t --rm -v `pwd`:/inputs \
-        reanahub/reana-env-aliphysics:vAN-20170521-1 \
+        reanahub/reana-env-aliphysics:vAN-20180614-1 \
         'cd /inputs && root -b -q ./plot.C'
    $ ls -l plot.pdf
 
@@ -251,40 +256,41 @@ the workflow and the expected outputs:
 
 .. code-block:: yaml
 
-   version: 0.3.0
-   inputs:
-     files:
+    version: 0.3.0
+    inputs:
+      files:
       - MLTrainDefinition.cfg
       - data.txt
       - env.sh
       - generate.C
+      - generator_customization.C
       - globalvariables.C
       - handlers.C
       - plot.C
       - runTest.sh
       - fix-env.sh
-     parameters:
-       none: none
-   outputs:
-     files:
+      parameters:
+        none: none
+    outputs:
+      files:
       - plot.pdf
-   environments:
+    environments:
     - type: docker
-      image: reanahub/reana-env-aliphysics:vAN-20170521-1
-   workflow:
-     type: serial
-     specification:
-       steps:
-         - environment: 'reanahub/reana-env-aliphysics:vAN-20170521-1'
-           commands:
-           - 'cp ../inputs/* .'
-           - 'mkdir __alice__data__2011__LHC11h_2__000170387/'
-           - 'wget http://opendata.cern.ch/record/1100/files/assets/alice/2010/LHC10b/000117222/ESD/0001/AliESDs.root'
-           - 'mv AliESDs.root __alice__data__2011__LHC11h_2__000170387/'
-           - 'source fix-env.sh && source env.sh && aliroot -b -q generate.C > generation.log 2> generation.err'
-           - 'source fix-env.sh && source env.sh && export ALIEN_PROC_ID=12345678 && source ./lego_train.sh > stdout 2> stderr'
-           - 'source fix-env.sh && source env.sh && source ./lego_train_validation.sh > validation.log 2> validation.err'
-           - 'source fix-env.sh && source env.sh && root -b -q ./plot.C'
+      image: reanahub/reana-env-aliphysics:vAN-20180614-1
+    workflow:
+      type: serial
+      specification:
+        steps:
+          - environment: 'reanahub/reana-env-aliphysics:vAN-20180614-1'
+            commands:
+            - 'cp ../inputs/* .'
+            - 'mkdir __alice__data__2010__LHC10h_2__000139038/'
+            - 'wget http://opendata.cern.ch/record/1102/files/assets/alice/2010/LHC10h/000139038/ESD/0003/AliESDs.root'
+            - 'mv AliESDs.root __alice__data__2010__LHC10h_2__000139038/'
+            - 'source fix-env.sh && source env.sh && aliroot -b -q generate.C | tee generation.log 2> generation.err'
+            - 'source fix-env.sh && source env.sh && export ALIEN_PROC_ID=12345678 && source ./lego_train.sh | tee stdout 2> stderr'
+            - 'source fix-env.sh && source env.sh && source ./lego_train_validation.sh | tee validation.log 2> validation.err'
+            - 'source fix-env.sh && source env.sh && root -b -q ./plot.C'
 
 We proceed by installing the REANA command-line client:
 
@@ -306,22 +312,22 @@ on your laptop, you would do:
 
 .. code-block:: console
 
-   $ eval $(reana-cluster env)
+    $ eval $(reana-cluster env)
 
 Let us test the client-to-server connection:
 
 .. code-block:: console
 
-   $ reana-client ping
-   Server is running.
+    $ reana-client ping
+    Server is running.
 
 We can now seed the analysis workspace with input files:
 
 .. code-block:: console
 
-   $ reana-client inputs upload MLTrainDefinition.cfg data.txt \
-        env.sh generate.C globalvariables.C handlers.C plot.C \
-        runTest.sh fix-env.sh
+    $ reana-client inputs upload MLTrainDefinition.cfg data.txt \
+        env.sh generate.C generator_customization.C globalvariables.C \
+        handlers.C plot.C runTest.sh fix-env.sh
 
 We can now start the workflow execution:
 
@@ -343,9 +349,9 @@ We can list and download the output files:
 
 .. code-block:: console
 
-   $ reana-client outputs list
-   $ reana-client outputs download stdout
-   $ reana-client outputs download plot.pdf
+    $ reana-client outputs list
+    $ reana-client outputs download stdout
+    $ reana-client outputs download plot.pdf
 
 Contributors
 ============
