@@ -1,14 +1,13 @@
-void plot()
-{
+output(){
+  TFile *file = TFile::Open("AnalysisResults.root");
+  TList *list = (TList*) gFile->Get("NetNpiMCBASE");
 
-  TFile *file = TFile::Open("GammaConvFlow_69.root");
-  TList *list = (TList*) gFile->Get("GammaConvV1_69_v2");
-
-  TH1D *plot = (TH1D*) list->FindObject("EPVZ");
+  TH1F *plot = (TH1F*) list->FindObject("fHistCentPid");
 
   TCanvas* c1 = new TCanvas("can1", "can1", 1200, 800);
-  if(plot)
+  if(plot){
+    plot->GetXaxis()->SetTitle("centrality");
+    plot->GetYaxis()->SetTitle("events");
     plot->DrawCopy();
-
-  c1->SaveAs("plot.pdf");
+  }
 }
