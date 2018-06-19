@@ -223,8 +223,7 @@ permit to visualise the centrality of accepted events:
 
 Low centralities mean that the the Pb particles hit each other a lot and many
 nucleons collide. High centralities mean that the Pb particles barely interacted
-and only very few nucelons did collide. The centrality of events may be used for
-particle identification.
+and only very few nucelons did collide.
 
 Local testing
 =============
