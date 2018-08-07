@@ -282,7 +282,6 @@ the workflow and the expected outputs:
         steps:
           - environment: 'reanahub/reana-env-aliphysics:vAN-20180614-1'
             commands:
-            - 'cp ../inputs/* .'
             - 'mkdir __alice__data__2010__LHC10h_2__000139038/'
             - 'wget http://opendata.cern.ch/record/1102/files/assets/alice/2010/LHC10h/000139038/ESD/0003/AliESDs.root'
             - 'mv AliESDs.root __alice__data__2010__LHC10h_2__000139038/'
@@ -299,11 +298,13 @@ We proceed by installing the REANA command-line client:
     $ pip install reana-client
 
 We should now connect the client to the remote REANA cloud where the analysis
-will run. We do this by setting the ``REANA_SERVER_URL`` environment variable:
+will run. We do this by setting the ``REANA_SERVER_URL`` environment variable
+and ``REANA_ACCESS_TOKEN`` with a valid access token:
 
 .. code-block:: console
 
-    $ export REANA_SERVER_URL=https://reana.cern.ch/
+   $ export REANA_SERVER_URL=https://reana.cern.ch
+   $ export REANA_ACCESS_TOKEN=<ACCESS_TOKEN>
 
 Note that if you `run REANA cluster locally
 <http://reana-cluster.readthedocs.io/en/latest/gettingstarted.html#deploy-reana-cluster-locally>`_
@@ -311,20 +312,20 @@ on your laptop, you would do:
 
 .. code-block:: console
 
-    $ eval $(reana-cluster env)
+    $ eval $(reana-cluster env --all)
 
 Let us test the client-to-server connection:
 
 .. code-block:: console
 
     $ reana-client ping
-    Server is running.
+    Connected to https://reana.cern.ch - Server is running.
 
 We can now seed the analysis workspace with input files:
 
 .. code-block:: console
 
-    $ reana-client inputs upload MLTrainDefinition.cfg data.txt \
+    $ reana-client upload MLTrainDefinition.cfg data.txt \
         env.sh generate.C generator_customization.C globalvariables.C \
         handlers.C plot.C runTest.sh fix-env.sh
 
@@ -332,7 +333,7 @@ We can now start the workflow execution:
 
 .. code-block:: console
 
-    $ reana-client workflow start
+    $ reana-client start
     workflow.1 has been started.
 
 After several minutes the workflow should be successfully finished. Let us query
@@ -340,17 +341,17 @@ its status:
 
 .. code-block:: console
 
-    $ reana-client workflow status
-    NAME       RUN_NUMBER   ID                                     USER                                   ORGANIZATION   STATUS
-    workflow   1            0df60c85-9d84-402e-814c-0595fe5fd439   00000000-0000-0000-0000-000000000000   default        finished
+    $ reana-client status
+    NAME       RUN_NUMBER   CREATED               STATUS     PROGRESS
+    workflow   1            2018-08-07T14:46:04   finished   7/7 
 
 We can list and download the output files:
 
 .. code-block:: console
 
-    $ reana-client outputs list
-    $ reana-client outputs download stdout
-    $ reana-client outputs download plot.pdf
+    $ reana-client list
+    $ reana-client download stdout
+    $ reana-client download plot.pdf
 
 Contributors
 ============

@@ -25,7 +25,6 @@ workflow:
     steps:
       - environment: 'reanahub/reana-env-aliphysics:vAN-20180614-1'
         commands:
-        - 'cp ../inputs/* .'
         - 'mkdir __alice__data__2010__LHC10h_2__000139038/'
         - 'wget http://opendata.cern.ch/record/1102/files/assets/alice/2010/LHC10h/000139038/ESD/0003/AliESDs.root'
         - 'mv AliESDs.root __alice__data__2010__LHC10h_2__000139038/'
