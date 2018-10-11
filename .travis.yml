@@ -18,4 +18,4 @@ before_install:
   - travis_retry pip install reana-client
 
 script:
-  - reana-client analyses validate | grep -q ' is a valid '
+  - reana-client validate | grep -q ' is a valid '

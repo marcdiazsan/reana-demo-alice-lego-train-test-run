@@ -225,33 +225,12 @@ Low centralities mean that the the Pb particles hit each other a lot and many
 nucleons collide. High centralities mean that the Pb particles barely interacted
 and only very few nucelons did collide.
 
-Local testing
-=============
-
-*Optional*
-
-If you would like to test the analysis locally (i.e. outside of the REANA
-platform), you can proceed as follows:
-
-.. code-block:: console
-
-   $ ls -l __alice__data__2010__LHC10h_2__000139038/AliESDs.root
-   $ docker run -i -t --rm -v `pwd`:/inputs \
-        reanahub/reana-env-aliphysics:vAN-20180614-1 \
-        'cd /inputs && source ./runTest.sh'
-   $ tail -4 stdout
-   $ ls -l AnalysisResults.root EventStat_temp.root
-   $ docker run -i -t --rm -v `pwd`:/inputs \
-        reanahub/reana-env-aliphysics:vAN-20180614-1 \
-        'cd /inputs && root -b -q ./plot.C'
-   $ ls -l plot.pdf
-
 Running the example on REANA cloud
 ==================================
 
-First we need to create a `reana.yaml <reana.yaml>`_ file describing the
-structure of our analysis with its inputs, the code, the runtime environment,
-the workflow and the expected outputs:
+We start by creating a `reana.yaml <reana.yaml>`_ file describing the above
+analysis structure with its inputs, code, runtime environment, computational
+workflow steps and expected outputs:
 
 .. code-block:: yaml
 
@@ -268,14 +247,6 @@ the workflow and the expected outputs:
       - plot.C
       - runTest.sh
       - fix-env.sh
-      parameters:
-        none: none
-    outputs:
-      files:
-      - plot.pdf
-    environments:
-    - type: docker
-      image: reanahub/reana-env-aliphysics:vAN-20180614-1
     workflow:
       type: serial
       specification:
@@ -289,74 +260,48 @@ the workflow and the expected outputs:
             - 'source fix-env.sh && source env.sh && export ALIEN_PROC_ID=12345678 && source ./lego_train.sh | tee stdout 2> stderr'
             - 'source fix-env.sh && source env.sh && source ./lego_train_validation.sh | tee validation.log 2> validation.err'
             - 'source fix-env.sh && source env.sh && root -b -q ./plot.C'
+    outputs:
+      files:
+      - plot.pdf
 
-We proceed by installing the REANA command-line client:
+
+We can now install the REANA command-line client, run the analysis and download
+the resulting plots:
 
 .. code-block:: console
 
+    $ # install REANA client
     $ mkvirtualenv reana-client
     $ pip install reana-client
-
-We should now connect the client to the remote REANA cloud where the analysis
-will run. We do this by setting the ``REANA_SERVER_URL`` environment variable
-and ``REANA_ACCESS_TOKEN`` with a valid access token:
-
-.. code-block:: console
-
-   $ export REANA_SERVER_URL=https://reana.cern.ch
-   $ export REANA_ACCESS_TOKEN=<ACCESS_TOKEN>
-
-Note that if you `run REANA cluster locally
-<http://reana-cluster.readthedocs.io/en/latest/gettingstarted.html#deploy-reana-cluster-locally>`_
-on your laptop, you would do:
-
-.. code-block:: console
-
-    $ eval $(reana-cluster env --all)
-
-Let us test the client-to-server connection:
-
-.. code-block:: console
-
-    $ reana-client ping
-    Connected to https://reana.cern.ch - Server is running.
-
-We can now seed the analysis workspace with input files:
-
-.. code-block:: console
-
+    $ # connect to some REANA cloud instance
+    $ export REANA_SERVER_URL=https://reana.cern.ch/
+    $ export REANA_ACCESS_TOKEN=XXXXXXX
+    $ # create new workflow
+    $ reana-client create -n my-analysis
+    $ export REANA_WORKON=my-analysis
+    $ # upload input code and data to the workspace
     $ reana-client upload MLTrainDefinition.cfg data.txt \
-        env.sh generate.C generator_customization.C globalvariables.C \
-        handlers.C plot.C runTest.sh fix-env.sh
-
-We can now start the workflow execution:
-
-.. code-block:: console
-
+      env.sh generate.C generator_customization.C globalvariables.C \
+      handlers.C plot.C runTest.sh fix-env.sh
+    $ # start computational workflow
     $ reana-client start
-    workflow.1 has been started.
-
-After several minutes the workflow should be successfully finished. Let us query
-its status:
-
-.. code-block:: console
-
+    $ # ... should be finished in about a minute
     $ reana-client status
-    NAME       RUN_NUMBER   CREATED               STATUS     PROGRESS
-    workflow   1            2018-08-07T14:46:04   finished   7/7 
-
-We can list and download the output files:
-
-.. code-block:: console
-
+    $ # list workspace files
     $ reana-client list
+    $ # download output results
     $ reana-client download stdout
     $ reana-client download plot.pdf
+
+Please see the `REANA-Client <https://reana-client.readthedocs.io/>`_
+documentation for more detailed explanation of typical ``reana-client`` usage
+scenarios.
 
 Contributors
 ============
 
 The list of contributors in alphabetical order:
 
-- Markus Zimmermann <m.zimmermann@cern.ch>
-- `Tibor Simko <https://orcid.org/0000-0001-7202-5803>`_ <tibor.simko@cern.ch>
+- Markus Zimmermann
+- `Rokas Maciulaitis <https://orcid.org/0000-0003-1064-6967>`_
+- `Tibor Simko <https://orcid.org/0000-0001-7202-5803>`_

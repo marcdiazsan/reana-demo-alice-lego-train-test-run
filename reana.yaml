@@ -11,14 +11,6 @@ inputs:
    - plot.C
    - runTest.sh
    - fix-env.sh
-  parameters:
-    none: none
-outputs:
-  files:
-   - plot.pdf
-environments:
- - type: docker
-   image: reanahub/reana-env-aliphysics:vAN-20180614-1
 workflow:
   type: serial
   specification:
@@ -32,3 +24,6 @@ workflow:
         - 'source fix-env.sh && source env.sh && export ALIEN_PROC_ID=12345678 && source ./lego_train.sh | tee stdout 2> stderr'
         - 'source fix-env.sh && source env.sh && source ./lego_train_validation.sh | tee validation.log 2> validation.err'
         - 'source fix-env.sh && source env.sh && root -b -q ./plot.C'
+outputs:
+  files:
+   - plot.pdf
