@@ -270,8 +270,10 @@ the resulting plots:
 
 .. code-block:: console
 
-    $ # install REANA client
-    $ mkvirtualenv reana-client
+    $ # create new virtual environment
+    $ virtualenv ~/.virtualenvs/myreana
+    $ source ~/.virtualenvs/myreana/bin/activate
+    $ # install reana-client utility
     $ pip install reana-client
     $ # connect to some REANA cloud instance
     $ export REANA_SERVER_URL=https://reana.cern.ch/
