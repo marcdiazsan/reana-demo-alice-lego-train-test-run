@@ -2,8 +2,8 @@
  REANA example - ALICE LEGO train test run
 ===========================================
 
-.. image:: https://img.shields.io/travis/reanahub/reana-demo-alice-lego-train-test-run.svg
-   :target: https://travis-ci.org/reanahub/reana-demo-alice-lego-train-test-run
+.. image:: https://github.com/reanahub/reana-demo-alice-lego-train-test-run/workflows/CI/badge.svg
+      :target: https://github.com/reanahub/reana-demo-alice-lego-train-test-run/actions
 
 .. image:: https://badges.gitter.im/Join%20Chat.svg
    :target: https://gitter.im/reanahub/reana?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
